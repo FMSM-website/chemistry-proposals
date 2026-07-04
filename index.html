@@ -1,475 +1,565 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>استمارة الطعن في التوجيه 2026-2027</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --primary-chem:#00695c; --secondary-chem:#26a69a; --accent-orange:#ff8f00;
-  --danger-color:#d32f2f; --warn-color:#f9a825; --bg-soft:#f0f4f4;
-  --white:#ffffff; --shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-*{box-sizing:border-box;}
-body{font-family:'Cairo',sans-serif;background:linear-gradient(135deg,#e0f2f1 0%,#b2dfdb 100%);margin:0;padding:20px;color:#333;min-height:100vh;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة طعون توجيه طلبة الكيمياء 2026-2027</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <style>
+        :root {
+            --primary-chem: #00695c;
+            --secondary-chem: #26a69a;
+            --accent-orange: #ff8f00;
+            --danger-color: #d32f2f;
+            --success-color: #2e7d32;
+            --bg-soft: #f0f4f4;
+            --white: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
 
-.form-container{max-width:850px;margin:40px auto;background:var(--white);border-radius:30px;overflow:hidden;box-shadow:var(--shadow);border-top:12px solid var(--primary-chem);}
-.form-container.state-open{border-top-color:var(--primary-chem);}
-.form-container.state-waiting{border-top-color:var(--warn-color);}
-.form-container.state-closed{border-top-color:var(--danger-color);}
+        * { box-sizing: border-box; }
 
-.header-section{background:#f8fdfd;padding:40px 30px;text-align:center;border-bottom:2px dashed #eee;}
-.header-section h1{color:var(--primary-chem);font-size:1.8rem;margin:0 0 10px;}
-.header-section p{color:#666;font-weight:600;margin:5px 0;}
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            margin: 0; padding: 20px; color: #333; min-height: 100vh;
+        }
 
-.status-alert{padding:20px;border-radius:15px;margin:20px auto 0;max-width:90%;font-size:1.15rem;font-weight:700;}
-.status-alert.open{background:#e0f2f1;color:var(--primary-chem);border:1px solid #b2dfdb;}
-.status-alert.waiting{background:#fff8e1;color:#e65100;border:1px solid #ffe082;}
-.status-alert.closed{background:#ffebee;color:var(--danger-color);border:1px solid #ffcdd2;}
+        .form-container {
+            max-width: 850px; margin: 40px auto;
+            background: var(--white);
+            border-radius: 30px; overflow: hidden;
+            box-shadow: var(--shadow);
+            border-top: 12px solid var(--primary-chem);
+            transition: border-top-color .4s ease;
+        }
+        .form-container.closed-state { border-top-color: var(--danger-color); }
 
-.timeline-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;padding:25px;background:#f5f5f5;border-radius:15px;margin:20px 40px;border:1px solid #e0e0e0;}
-.time-item{text-align:center;font-size:0.9rem;color:#777;}
-.time-item strong{display:block;color:#9e9e9e;font-size:1rem;}
-.time-item.active-stage{color:#333;}
-.time-item.active-stage strong{color:var(--accent-orange);}
+        .header-section {
+            background: #f8fdfd; padding: 40px 30px;
+            text-align: center; border-bottom: 2px dashed #eee;
+        }
+        .header-section h1 { color: var(--primary-chem); font-size: 1.8rem; margin: 0 0 10px; }
+        .header-section p { color: #666; font-weight: 600; margin: 5px 0; }
 
-.viewer-btn-wrap{display:flex;justify-content:center;padding:0 40px 10px;}
-.viewer-btn{display:inline-flex;align-items:center;gap:10px;background:var(--secondary-chem);color:#fff;border:none;padding:14px 22px;border-radius:14px;font-family:'Cairo';font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 6px 14px rgba(38,166,154,0.35);transition:transform .15s;}
-.viewer-btn:hover{transform:translateY(-2px);}
-.viewer-btn svg{width:22px;height:22px;fill:#fff;}
+        .status-alert {
+            padding: 20px; border-radius: 15px; margin: 20px auto 0;
+            max-width: 90%; font-size: 1.15rem; font-weight: 700; border: 1px solid transparent;
+        }
+        .status-alert.open { background: #e8f5e9; color: var(--success-color); border-color: #c8e6c9; }
+        .status-alert.closed { background: #ffebee; color: var(--danger-color); border-color: #ffcdd2; }
+        .status-alert.waiting { background: #fff3e0; color: var(--accent-orange); border-color: #ffe0b2; }
 
-.form-content{padding:40px;}
-.form-content.disabled-mode{opacity:0.55;pointer-events:none;}
-.section-header{display:flex;align-items:center;gap:10px;margin-bottom:25px;color:var(--primary-chem);font-weight:900;border-right:5px solid var(--primary-chem);padding-right:15px;}
-.grid-inputs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:10px;}
-@media (max-width:600px){.grid-inputs{grid-template-columns:1fr;}}
-.input-group{margin-bottom:20px;}
-.input-group.full{grid-column:1/-1;}
-label{display:block;margin-bottom:8px;font-weight:700;color:#555;}
-input,select,textarea{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:12px;font-family:'Cairo';font-size:0.95rem;background:#fafafa;color:#333;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--secondary-chem);background:#fff;}
-textarea{resize:vertical;min-height:110px;}
+        .countdown {
+            display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap;
+        }
+        .countdown .cbox {
+            background: var(--primary-chem); color: white; border-radius: 12px;
+            padding: 10px 16px; min-width: 70px; text-align: center;
+        }
+        .countdown .cbox strong { display: block; font-size: 1.4rem; }
+        .countdown .cbox span { font-size: 0.75rem; opacity: .85; }
 
-.submit-btn{background:var(--primary-chem);color:#fff;border:none;width:100%;padding:18px;border-radius:15px;font-size:1.15rem;font-weight:900;cursor:pointer;margin-top:10px;box-shadow:0 8px 18px rgba(0,105,92,0.3);}
-.submit-btn:disabled{background:#bdbdbd;cursor:not-allowed;box-shadow:none;}
-.hint{font-size:0.85rem;color:#888;margin-top:10px;text-align:center;}
-.confirm-box{display:none;background:#e8f5e9;border:1px solid #c8e6c9;color:#1b5e20;padding:18px;border-radius:12px;margin-top:20px;font-weight:700;text-align:center;}
+        .timeline-box {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; padding: 25px; background: #f5f5f5; border-radius: 15px;
+            margin: 20px 40px; border: 1px solid #e0e0e0;
+        }
+        .time-item { text-align: center; font-size: 0.9rem; color: #777; }
+        .time-item strong { display: block; color: #9e9e9e; font-size: 1rem; }
+        .time-item.active-stage { color: #333; }
+        .time-item.active-stage strong { color: var(--accent-orange); }
+        .time-item.done-stage strong { color: var(--primary-chem); }
 
-.footer{text-align:center;padding:30px;color:#777;font-size:0.85rem;border-top:1px solid #eee;}
+        .form-content { padding: 40px; transition: opacity .3s; }
+        .form-content.disabled-form { opacity: 0.5; pointer-events: none; }
 
-/* ===== Modal viewer ===== */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,20,18,0.75);z-index:1000;align-items:center;justify-content:center;padding:20px;}
-.modal-overlay.active{display:flex;}
-.modal-box{background:#fff;border-radius:22px;max-width:950px;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.4);position:relative;}
-.modal-head{background:var(--primary-chem);color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;}
-.modal-head h2{margin:0;font-size:1.2rem;}
-.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;}
+        .section-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 25px; color: var(--primary-chem);
+            font-weight: 900; border-right: 5px solid var(--secondary-chem); padding-right: 15px;
+        }
 
-.gate{padding:35px;text-align:center;}
-.gate p{color:#555;line-height:1.9;}
-.gate input{max-width:320px;margin:10px auto;}
-.gate .warn{background:#fff3e0;color:#e65100;border:1px solid #ffe0b2;border-radius:12px;padding:14px;font-size:0.9rem;margin-top:18px;text-align:right;}
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 10px; }
+        @media (max-width: 600px) { .grid-inputs { grid-template-columns: 1fr; } }
 
-.viewer-body{position:relative;overflow:auto;flex:1;user-select:none;-webkit-user-select:none;-moz-user-select:none;}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;padding:16px 20px 0;position:sticky;top:0;background:#fff;z-index:2;}
-.tab-btn{border:2px solid var(--secondary-chem);background:#fff;color:var(--primary-chem);padding:8px 14px;border-radius:10px;font-family:'Cairo';font-weight:700;font-size:0.85rem;cursor:pointer;}
-.tab-btn.active{background:var(--secondary-chem);color:#fff;}
-.spec-table-wrap{padding:20px;}
-table.spec-table{width:100%;border-collapse:collapse;font-size:0.9rem;}
-table.spec-table th{background:#e0f2f1;color:var(--primary-chem);padding:10px;position:sticky;top:0;}
-table.spec-table td{padding:8px 10px;border-bottom:1px solid #eee;}
-table.spec-table tr:nth-child(even){background:#fafafa;}
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: #555; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+            border-radius: 12px; box-sizing: border-box; font-family: 'Cairo';
+            font-size: 0.95rem; background: #fafafa; color: #333;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--secondary-chem); background: white; }
+        textarea { resize: vertical; min-height: 90px; }
 
-.watermark-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5;opacity:0.16;}
-.watermark-layer span{position:absolute;white-space:nowrap;font-size:1.1rem;font-weight:900;color:#d32f2f;transform:rotate(-28deg);}
+        .submit-btn {
+            background: var(--primary-chem);
+            color: white; border: none; width: 100%; padding: 18px;
+            border-radius: 15px; font-size: 1.2rem; font-weight: 900;
+            cursor: pointer; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,105,92,0.3);
+            transition: background .2s;
+        }
+        .submit-btn:hover { background: #004d40; }
+        .submit-btn:disabled { background: #bdbdbd; cursor: not-allowed; box-shadow: none; }
 
-.protect-blur{filter:blur(14px);transition:filter .15s;}
+        .success-msg {
+            display: none; background: #e8f5e9; color: var(--success-color); padding: 18px;
+            border-radius: 12px; margin-top: 20px; font-weight: 700; text-align: center;
+        }
+        .error-msg {
+            display: none; background: #ffebee; color: var(--danger-color); padding: 14px;
+            border-radius: 12px; margin-top: 15px; font-weight: 700; text-align: center; font-size: 0.9rem;
+        }
 
-@media print{
-  body *{visibility:hidden !important;}
-  body::after{content:"لا يسمح بطباعة هذه الصفحة";visibility:visible;display:block;position:fixed;top:40%;right:0;left:0;text-align:center;font-size:2rem;font-family:'Cairo';color:#d32f2f;}
-}
-</style>
+        .footer { text-align: center; padding: 30px; color: #777; font-size: 0.85rem; border-top: 1px solid #eee; }
+
+        /* Admin access button */
+        .admin-fab {
+            position: fixed; bottom: 22px; left: 22px; width: 50px; height: 50px;
+            border-radius: 50%; background: var(--primary-chem); color: white;
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.25); border: none; z-index: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center; z-index: 1000; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white; border-radius: 20px; max-width: 950px; width: 100%;
+            max-height: 88vh; overflow-y: auto; padding: 30px; box-shadow: var(--shadow);
+        }
+        .modal-box h2 { color: var(--primary-chem); margin-top: 0; text-align: center; }
+        .modal-close { float: left; background: #eee; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; }
+
+        .login-box { max-width: 340px; margin: 0 auto; }
+        .login-box .submit-btn { margin-top: 10px; }
+        .login-error { color: var(--danger-color); text-align: center; font-weight: 700; margin-top: 10px; display: none; }
+
+        .security-note {
+            background: #fff3e0; color: #8d6e00; border: 1px solid #ffe0b2; border-radius: 10px;
+            padding: 12px; font-size: 0.8rem; margin-bottom: 20px; line-height: 1.6;
+        }
+
+        .dash-toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; justify-content: space-between; }
+        .dash-toolbar .count-badge { background: var(--secondary-chem); color: white; padding: 8px 16px; border-radius: 30px; font-weight: 700; }
+        .btn-secondary {
+            background: var(--accent-orange); color: white; border: none; padding: 12px 20px;
+            border-radius: 12px; font-weight: 700; cursor: pointer; font-family: 'Cairo';
+        }
+        .btn-danger-outline {
+            background: white; color: var(--danger-color); border: 2px solid var(--danger-color);
+            padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; font-family: 'Cairo';
+        }
+
+        table.appeals-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        table.appeals-table th { background: var(--primary-chem); color: white; padding: 10px; position: sticky; top: 0; }
+        table.appeals-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        table.appeals-table tr:nth-child(even) { background: #f8fdfd; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+    </style>
 </head>
 <body>
 
-<div class="form-container state-waiting" id="formContainer">
+<div class="form-container" id="formContainer">
+    <div class="header-section">
+        <h1>استمارة طعون توجيه طلبة السنة الثالثة كيمياء أساسية</h1>
+        <p>الموسم الجامعي 2026-2027</p>
 
-  <div class="header-section">
-    <h1>استمارة الطعن في نتائج التوجيه</h1>
-    <p>طلبة السنة الثالثة كيمياء أساسية — الموسم الجامعي 2026-2027</p>
-    <div class="status-alert" id="statusAlert"></div>
-  </div>
-
-  <div class="timeline-box">
-    <div class="time-item">
-      <strong>فتح باب الطعون</strong>
-      الخميس 02/07/2026
-    </div>
-    <div class="time-item">
-      <strong>غلق باب الطعون تلقائياً</strong>
-      السبت 03/07/2026
-    </div>
-    <div class="time-item">
-      <strong>النتائج النهائية</strong>
-      الأربعاء 01 جوان 2026
-    </div>
-  </div>
-
-  <div class="viewer-btn-wrap">
-    <button class="viewer-btn" id="openViewerBtn" type="button">
-      <svg viewBox="0 0 24 24"><path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/></svg>
-      عرض قوائم التوجيه — السنة أولى ماستر
-    </button>
-  </div>
-
-  <form id="appealForm" class="form-content" onsubmit="return false;">
-    <div class="section-header">1. بيانات الطالب</div>
-    <div class="grid-inputs">
-      <div class="input-group">
-        <label>الاسم واللقب *</label>
-        <input type="text" id="f_name" required placeholder="مثال: بوعقل نور الإيمان">
-      </div>
-      <div class="input-group">
-        <label>رقم التسجيل (Matricule) *</label>
-        <input type="text" id="f_matricule" required placeholder="232339XXXXXX">
-      </div>
-      <div class="input-group">
-        <label>رقم الهاتف *</label>
-        <input type="tel" id="f_phone" required placeholder="0X XX XX XX XX">
-      </div>
-      <div class="input-group">
-        <label>البريد الإلكتروني *</label>
-        <input type="email" id="f_email" required placeholder="example@mail.com">
-      </div>
+        <div id="statusAlert" class="status-alert waiting">جارِ التحقق من حالة المنصة...</div>
+        <div id="countdown" class="countdown" style="display:none;"></div>
     </div>
 
-    <div class="section-header">2. تفاصيل الطعن</div>
-    <div class="grid-inputs">
-      <div class="input-group">
-        <label>التخصص المسند إليك حالياً *</label>
-        <select id="f_current" required>
-          <option value="">-- اختر --</option>
-          <option>كيمياء تحليلية</option>
-          <option>كيمياء صيدلانية</option>
-          <option>كيمياء المواد</option>
-          <option>كيمياء عضوية</option>
-          <option>كيمياء المنتجات الطبيعية</option>
-          <option>كيمياء البيئة والماء</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>التخصص الذي تطعن من أجله (اختياري)</label>
-        <select id="f_requested">
-          <option value="">-- بدون تفضيل محدد --</option>
-          <option>كيمياء تحليلية</option>
-          <option>كيمياء صيدلانية</option>
-          <option>كيمياء المواد</option>
-          <option>كيمياء عضوية</option>
-          <option>كيمياء المنتجات الطبيعية</option>
-          <option>كيمياء البيئة والماء</option>
-        </select>
-      </div>
-      <div class="input-group full">
-        <label>سبب الطعن *</label>
-        <textarea id="f_reason" required placeholder="اشرح بوضوح سبب طعنك (خطأ في المعدل، خطأ في الترتيب، إلخ...)"></textarea>
-      </div>
+    <div class="timeline-box">
+        <div class="time-item done-stage">
+            <strong>أخر أجل لاستقبال الرغبات</strong>
+            الخميس 30 أفريل 2026
+        </div>
+        <div class="time-item" id="appealsStageItem">
+            <strong>استقبال الطعون</strong>
+            السبت 04 جويلية 2026 (لمدة 72 ساعة)
+        </div>
+        <div class="time-item">
+            <strong>النتائج النهائية</strong>
+            الأربعاء 01 جوان 2026
+        </div>
     </div>
 
-    <button type="button" class="submit-btn" id="submitBtn">إرسال الطعن عبر البريد الإلكتروني</button>
-    <p class="hint">سيقوم هذا الزر بفتح برنامج البريد الإلكتروني لديك برسالة معبأة مسبقاً موجهة إلى قسم الكيمياء. تأكد من الضغط على "إرسال" داخل برنامج البريد لإتمام العملية.</p>
-    <div class="confirm-box" id="confirmBox">✔ تم فتح برنامج البريد الإلكتروني. الرجاء التأكد من إرسال الرسالة.</div>
-  </form>
+    <form id="appealForm" class="form-content" onsubmit="return false;">
 
-  <div class="footer">
-    البريد الإلكتروني للقسم: <strong>pg.dep.chemie@gmail.com</strong><br>
-    كلية الرياضيات وعلوم المادة - قسم الكيمياء - جامعة قاصدي مرباح ورقلة
-  </div>
+        <div class="section-header">1. البيانات الأساسية</div>
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>الاسم واللقب *</label>
+                <input type="text" id="fName" required placeholder="أدخل اسمك ولقبك">
+            </div>
+            <div class="input-group">
+                <label>رقم التسجيل *</label>
+                <input type="text" id="fRegNum" required placeholder="رقم التسجيل الجامعي">
+            </div>
+            <div class="input-group">
+                <label>رقم الهاتف *</label>
+                <input type="tel" id="fPhone" required placeholder="0X XX XX XX XX">
+            </div>
+            <div class="input-group">
+                <label>البريد الإلكتروني *</label>
+                <input type="email" id="fEmail" required placeholder="example@mail.com">
+            </div>
+        </div>
+
+        <div class="section-header">2. موضوع الطعن</div>
+        <div class="input-group">
+            <label>التخصص/الرغبة محل الطعن *</label>
+            <input type="text" id="fSpecialty" required placeholder="مثال: الرغبة الأولى - كيمياء تحليلية">
+        </div>
+        <div class="input-group">
+            <label>سبب الطعن (اشرح بالتفصيل) *</label>
+            <textarea id="fReason" required placeholder="اذكر سبب طعنك بوضوح ودقة..."></textarea>
+        </div>
+        <div class="input-group">
+            <label>ملاحظات إضافية (اختياري)</label>
+            <textarea id="fNotes" placeholder="أي معلومات إضافية تدعم طعنك"></textarea>
+        </div>
+
+        <button type="button" id="submitBtn" class="submit-btn">إرسال الطعن</button>
+        <div id="successMsg" class="success-msg">✅ تم استلام طعنك بنجاح. سيتم دراسته من طرف رئاسة القسم.</div>
+        <div id="errorMsg" class="error-msg">⚠️ الرجاء تعبئة جميع الحقول الإلزامية.</div>
+    </form>
+
+    <div class="footer">
+        البريد الإلكتروني للقسم: <strong>pg.dep.chemie@gmail.com</strong><br>
+        كلية الرياضيات وعلوم المادة - قسم الكيمياء - جامعة قاصدي مرباح ورقلة
+    </div>
 </div>
 
-<!-- ===================== Modal: قوائم التوجيه (عرض فقط) ===================== -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2>قوائم التوجيه — السنة أولى ماستر (كيمياء)</h2>
-      <button class="modal-close" id="closeModalBtn">✕</button>
-    </div>
+<button class="admin-fab" id="adminFab" title="فضاء الإدارة">⚙️</button>
 
-    <div class="gate" id="gateScreen">
-      <p>هذه القوائم للاطلاع فقط من طرف الطلبة المعنيين.<br>الرجاء إدخال بياناتك للمتابعة (ستظهر كعلامة مائية على القائمة):</p>
-      <input type="text" id="gate_name" placeholder="الاسم واللقب">
-      <input type="text" id="gate_matricule" placeholder="رقم التسجيل" style="margin-top:10px;">
-      <div style="margin-top:18px;">
-        <button class="viewer-btn" id="gateEnterBtn" type="button" style="background:var(--primary-chem);">دخول للاطلاع</button>
-      </div>
-      <div class="warn">⚠ هذه القائمة للعرض فقط. تحميل الملف أو طباعته أو نسخ محتواه غير مسموح، وتظهر بياناتك كعلامة مائية على كل صفحة.</div>
+<!-- Admin login modal -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-box login-box">
+        <button class="modal-close" id="closeLoginModal">✕</button>
+        <h2>🔒 فضاء رئاسة القسم</h2>
+        <div class="input-group">
+            <label>اسم المستخدم</label>
+            <input type="text" id="adminUser" placeholder="اسم المستخدم">
+        </div>
+        <div class="input-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="adminPass" placeholder="كلمة المرور">
+        </div>
+        <button class="submit-btn" id="loginBtn">دخول</button>
+        <div class="login-error" id="loginError">اسم المستخدم أو كلمة المرور غير صحيحة.</div>
     </div>
+</div>
 
-    <div class="viewer-body" id="viewerBody" style="display:none;">
-      <div class="tabs" id="specTabs"></div>
-      <div class="spec-table-wrap" id="specTableWrap"></div>
-      <div class="watermark-layer" id="watermarkLayer"></div>
+<!-- Admin dashboard modal -->
+<div class="modal-overlay" id="dashModal">
+    <div class="modal-box" style="max-width:1100px;">
+        <button class="modal-close" id="closeDashModal">✕</button>
+        <h2>📋 لوحة تفحص طعون الطلبة</h2>
+        <p style="text-align:center;color:#777;margin-top:-10px;">كلية الرياضيات وعلوم المادة - قسم الكيمياء</p>
+
+        <div class="dash-toolbar">
+            <span class="count-badge" id="countBadge">0 طعن</span>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-secondary" id="exportBtn">⬇️ تحميل ملف Excel منسّق</button>
+                <button class="btn-danger-outline" id="refreshBtn">↻ تحديث</button>
+            </div>
+        </div>
+
+        <div id="tableWrap" style="max-height:55vh; overflow:auto; border:1px solid #eee; border-radius:12px;">
+            <table class="appeals-table" id="appealsTable">
+                <thead>
+                    <tr>
+                        <th>تاريخ الإرسال</th>
+                        <th>الاسم واللقب</th>
+                        <th>رقم التسجيل</th>
+                        <th>الهاتف</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الرغبة/التخصص محل الطعن</th>
+                        <th>سبب الطعن</th>
+                        <th>ملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody id="appealsBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" style="display:none;">لا توجد طعون مسجّلة حتى الآن.</div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-/* ================= بيانات قوائم التوجيه (سنة أولى ماستر) ================= */
-const SPECIALTIES = {
-  "كيمياء تحليلية": [
-    ["232339321908","BOUAKEL","NOUR ELIMANE"],["232339304612","CHIBANI","MARIA"],
-    ["232339310413","BENDJARBA","FATIMA ZAHRA"],["232339342915","BOUKHRIS","SOUAD"],
-    ["232339313710","ZIGHMI","BOCHRA"],["232339551108","GANA","MARWA"],
-    ["232339291616","FELLAH","MINET AYAT"],["232339322110","ANNOU","HALIMA CHAYMA"],
-    ["232339550715","BENDANIA","ZEBIDA"],["232339550607","BOUHOREIRA","ISRA"],
-    ["232339548311","DJEBBAS","YAMINA"],["232339291317","DERBAL","LINA"],
-    ["232339323112","LEHELLA","LOUBNA"],["232339530212","RIGHI","ASMA"],
-    ["232339321717","BENSARI","Rihabeldjanna"],["232339546519","TEDJINI","THOUIBA"],
-    ["222239352509","HERIZ","ABDELHAK"],["232339530920","NOUI","DIKRA"],
-    ["232339299017","LACHI","CHAIMA"],["222239328104","KADRI","ZINEB RACHA"],
-    ["232339550710","KACHI","DOUNIA SAMAH"],["232339323113","BEN HAMMOU","LOUBNA"],
-    ["232339532319","CHOUAKRI","NOUR EL IMANE"],["232339314512","CHAIBI","HAYAM"],
-    ["232339287218","BOUDERHEM","HANA"]
-  ],
-  "كيمياء صيدلانية": [
-    ["232339348112","CHAIB","Sara"],["232339526207","TAMA","HADIL"],
-    ["232339550705","KACHI","HALIMA"],["232339550820","BENNAMIA","Chaima"],
-    ["232339298615","MEZOUAR","IKRAM"],["232332471120","ABDELAIDOUM","MERIEM"],
-    ["232339525211","DJABOREBBI","AICHA"],["222239321220","CHAIB","SARA"],
-    ["232339540803","BAHHOU","LILLIA MARAM"],["232339525509","GHENDIR","KARIMA"],
-    ["212139092108","HADJ KOUIDER","MERIEME"],["232339544601","KENOUZE","AYATARRAHMANE"],
-    ["232339547207","SI KEBIR","SAFA"],["232339564708","ACHOUR","CHAIMA"],
-    ["222239352606","GHERIANI","NOUR ELIMANE"],["232339306611","ZIGHMI","Doua"],
-    ["232339321704","SOUICI","OUMHANI"],["232339314516","MERIZIG","WISSAL"],
-    ["232339303919","AMANI","BASMALA SALIMA"],["232339310202","DAOUI","AICHA"],
-    ["232339525409","ALLAM","GHOUZLANE"],["232339537702","SITOUHA","NOURELHOUDA"],
-    ["222239320709","BEN ARABI","Inas"],["232339313515","MOUTOU","Asma"],
-    ["232335443808","DJEBBAR","Rahma"],["232339548204","KERBOUA","Nourelhouda"]
-  ],
-  "كيمياء المواد": [
-    ["232339299308","BENYEZZA","FARAH"],["232339551008","NOUHA","FIRYAL ELPATOUL"],
-    ["232339548316","TOUATI","YOUCEF"],["232339317616","HACHEMI","KHADIDJA"],
-    ["222239321105","MEDJDOUB","DOUAA"],["232339543419","MOSBAH","SAMAH"],
-    ["232339531416","RIGHI","CHAIMA"],["222239312618","HAKKOUM","HIND"],
-    ["232339526218","BELMOSTEFA","OUISSAL"],["232339540412","BELAID","SADJEDA"],
-    ["232339540604","DAHBI","AICHA"],["232339523916","BELMAZOUZI","ASMA"],
-    ["232339532312","AZIZI","NIHAD"],["232339543507","DJOUAHI","CHIMA"],
-    ["232339530703","DJOUDI","Besma"],["232339550905","GANA","SAFIA"],
-    ["232339550813","MAHDJOUBI","SIHAM"],["232339526215","BOUGOFFA","WISSAM"],
-    ["232339521913","CHEBBOUB","SAMAH"],["222234048418","BENSEGHIR","MOHAMED MOKHTAR"],
-    ["222239317917","GUICI","Ouarda"],["232339530717","DJELLAKH","TAKOUA"],
-    ["232339537511","REZZAG HEBLA","MALIKA"],["232339543105","AHNANI","IBTESSAM"],
-    ["232339531719","LAOUER","Fatma zohra"]
-  ],
-  "كيمياء عضوية": [
-    ["232339573719","BELAKEHAL","AFAF"],["222239354110","MAHDJOUBI","HALIMA"],
-    ["232339546906","HAMDI","ZINEB"],["232339536211","HEZBRI","Isra"],
-    ["232339304314","BENTADJ","SAFA"],["222239348804","DJEDIAI","DJOUMANA"],
-    ["232339536619","MOKHTARI","Sajda"],["232339551118","GHETTAS","NESRINE"],
-    ["232339540315","TIDJANI","RIHAB CHARIA"],["232339536418","KHERRAZE","KHOULOUD"],
-    ["222239328820","MOGDAD","Farida"],["232339314212","AZIB","Lydia"],
-    ["212139050277","FETHALLAH","Roua Elkheir"],["212139052312","CHAOUCHE","NouhaFeriel"],
-    ["222239315911","RIZOUG","NourElimane"],["222239329315","AISSANI","MalakErrahmane"],
-    ["222239352410","TEDJADJENA","Bouthina"],["222239352414","DRIS","Douaa"],
-    ["222239322110","MANSOURI","MAROUA"],["232339309713","ALLALI","KHADIDJA"]
-  ],
-  "كيمياء المنتجات الطبيعية": [
-    ["232339543817","MEHALLI","MERIEM"],["232339314417","BENHABIRECHE","NACIMA"],
-    ["232339543501","BELKHIR","SOUNDOUS"],["232339543914","BOUZEGAG","NOURELIMANE"],
-    ["232339543416","DJAOUI","SALSABIL"],["222239320515","MANSOURI","OUM KALTOUM"],
-    ["232339524720","LAGGOUN","ROUIDA"],["232339520505","MAHDADI","El khansa"],
-    ["232339540713","KHERFI","FIRDOUS"],["222239306408","DJAFOUR","KHEDIDJA"],
-    ["232339520515","KHENFER","HAKIMA"],["232339563907","IDRICI","AYA"],
-    ["232339525201","BETTAYEB","SAFA"],["222239341307","BEN HAMED","FERIAL"],
-    ["222239306419","BEL MESSAOUD","DOUNIA AMIRA"],["232339329302","RAMDANE","MERIEM"],
-    ["232339569716","DJEGHEL","CHAIMA"],["222239320911","DIBOUNA","DJIHAD"],
-    ["222239327010","KHELFAOUI","AYA"],["232339321719","ANANE","RIHAME"],
-    ["222239401012","KENNOUNA","OUISSAM"],["222239308619","BELACHI","Salsabil"]
-  ],
-  "كيمياء البيئة والماء": [
-    ["232339540912","KHERFI","MALAK"],["222239317708","BACHI","Friha"],
-    ["232339313507","GOUARAH","AHLAM"],["222239317510","TELLI","SALSABIL"],
-    ["222239327210","CHAOUCHE","AMIRA"],["232339525417","GUERMIT","FATIMA ZOHRA"],
-    ["232339532318","GASMI","NOURELISLAM"],["232339537605","SAOUD","NARDJES"],
-    ["222239335207","BETTAYEB","NOUR ELHOUDA"],["222239329619","MOKHTARA","Hibeterrahmane"],
-    ["232339547109","MILOUDA","CHAHIRA"],["232339536212","DEBBA","ISRA"],
-    ["232339286512","KHEMLAOUI","CHEYMA"],["232339526011","BENNADA","Nasrine"],
-    ["232339521002","MAHAMMEDI","FATMA"],["232339303801","NEGAIS","IBTISSAM"],
-    ["232339521204","BOUGOFFA","MANARE"],["232339566208","BENATALLAH","Soundous"],
-    ["232339544004","BOURIALA","Hadil"],["232339540712","LAKEHAL","Fatiha"],
-    ["232339314420","MECHERI","Nour Elhouda"],["222239344417","MEKHALFIA","Chaima"],
-    ["232339551215","KRAMA","Ouanissa"]
-  ]
-};
+// ===================== CONFIG =====================
+// Appeals window: Saturday July 4, 2026, 00:00 Algeria time, open for 72 hours.
+// Algeria is UTC+1 year-round (no DST).
+const OPEN_TIME = new Date('2026-07-04T00:00:00+01:00');
+const CLOSE_TIME = new Date(OPEN_TIME.getTime() + 72 * 60 * 60 * 1000);
 
-/* ================= إدارة حالة فترة الطعون ================= */
-const OPEN_AT  = new Date(2026,6,2,0,0,0);   // الخميس 02/07/2026 00:00
-const CLOSE_AT = new Date(2026,6,3,23,59,59); // السبت 03/07/2026 23:59:59
+// Admin credentials (client-side gate only — see note in dashboard).
+const ADMIN_USERNAME = 'ra.chem2026';
+const ADMIN_PASSWORD = 'Chem@Ouargla2026!';
 
-function refreshFormState(){
-  const now = new Date();
-  const container = document.getElementById('formContainer');
-  const alertBox = document.getElementById('statusAlert');
-  const formEl = document.getElementById('appealForm');
-  const submitBtn = document.getElementById('submitBtn');
+// Google Apps Script Web App (handles storage + automatic email to the department).
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4obuMb7d_q8IUc4-iJk-LrYVaO9YV-FZal9CjhKQD0iEiBys-fwG3-iEexyqdc4wG2g/exec';
+// Must match the ADMIN_KEY constant inside the Apps Script code.
+const ADMIN_KEY = 'ra-chem-2026-secret-key';
 
-  container.classList.remove('state-open','state-waiting','state-closed');
-  alertBox.classList.remove('open','waiting','closed');
+// ===================== TIME / STATUS LOGIC =====================
+const statusAlert = document.getElementById('statusAlert');
+const countdownEl = document.getElementById('countdown');
+const formContainer = document.getElementById('formContainer');
+const appealForm = document.getElementById('appealForm');
+const submitBtn = document.getElementById('submitBtn');
+const appealsStageItem = document.getElementById('appealsStageItem');
 
-  if (now < OPEN_AT){
-    container.classList.add('state-waiting');
-    alertBox.classList.add('waiting');
-    alertBox.textContent = '⏳ باب الطعون لم يفتح بعد. سيفتح تلقائياً يوم الخميس 02/07/2026.';
-    formEl.classList.add('disabled-mode');
-    submitBtn.disabled = true;
-  } else if (now >= OPEN_AT && now <= CLOSE_AT){
-    container.classList.add('state-open');
-    alertBox.classList.add('open');
-    alertBox.textContent = '✅ باب الطعون مفتوح الآن. آخر أجل: السبت 03/07/2026 (يغلق تلقائياً).';
-    formEl.classList.remove('disabled-mode');
-    submitBtn.disabled = false;
-  } else {
-    container.classList.add('state-closed');
-    alertBox.classList.add('closed');
-    alertBox.textContent = '⛔ عذراً، تم إغلاق باب الطعون تلقائياً لانقضاء المدة المحددة.';
-    formEl.classList.add('disabled-mode');
-    submitBtn.disabled = true;
-  }
-}
-refreshFormState();
-setInterval(refreshFormState, 30000);
+function pad(n) { return String(n).padStart(2, '0'); }
 
-/* إرسال الطعن عبر mailto (لا يوجد خادم خلفي في هذا الملف) */
-document.getElementById('submitBtn').addEventListener('click', function(){
-  const name = document.getElementById('f_name').value.trim();
-  const matricule = document.getElementById('f_matricule').value.trim();
-  const phone = document.getElementById('f_phone').value.trim();
-  const email = document.getElementById('f_email').value.trim();
-  const current = document.getElementById('f_current').value;
-  const requested = document.getElementById('f_requested').value;
-  const reason = document.getElementById('f_reason').value.trim();
-
-  if(!name || !matricule || !phone || !email || !current || !reason){
-    alert('الرجاء تعبئة جميع الحقول الإلزامية (*)');
-    return;
-  }
-
-  const subject = encodeURIComponent('طعن في التوجيه - ' + matricule + ' - ' + name);
-  const body = encodeURIComponent(
-    'الاسم واللقب: ' + name + '\n' +
-    'رقم التسجيل: ' + matricule + '\n' +
-    'رقم الهاتف: ' + phone + '\n' +
-    'البريد الإلكتروني: ' + email + '\n' +
-    'التخصص المسند حالياً: ' + current + '\n' +
-    'التخصص المطلوب: ' + (requested || 'غير محدد') + '\n\n' +
-    'سبب الطعن:\n' + reason
-  );
-
-  window.location.href = 'mailto:pg.dep.chemie@gmail.com?subject=' + subject + '&body=' + body;
-  document.getElementById('confirmBox').style.display = 'block';
-});
-
-/* ================= مشغل قوائم التوجيه (عرض محمي فقط) ================= */
-const modalOverlay = document.getElementById('modalOverlay');
-const gateScreen = document.getElementById('gateScreen');
-const viewerBody = document.getElementById('viewerBody');
-const specTabs = document.getElementById('specTabs');
-const specTableWrap = document.getElementById('specTableWrap');
-const watermarkLayer = document.getElementById('watermarkLayer');
-
-document.getElementById('openViewerBtn').addEventListener('click', ()=>{
-  modalOverlay.classList.add('active');
-  gateScreen.style.display = 'block';
-  viewerBody.style.display = 'none';
-});
-document.getElementById('closeModalBtn').addEventListener('click', closeViewer);
-modalOverlay.addEventListener('click', (e)=>{ if(e.target === modalOverlay) closeViewer(); });
-
-function closeViewer(){
-  modalOverlay.classList.remove('active');
+function renderCountdown(msLeft, label) {
+    if (msLeft < 0) msLeft = 0;
+    const totalSec = Math.floor(msLeft / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    countdownEl.style.display = 'flex';
+    countdownEl.innerHTML = `
+        <div class="cbox"><strong>${pad(h)}</strong><span>${label}</span></div>
+        <div class="cbox"><strong>${pad(m)}</strong><span>دقيقة</span></div>
+        <div class="cbox"><strong>${pad(s)}</strong><span>ثانية</span></div>
+    `;
 }
 
-document.getElementById('gateEnterBtn').addEventListener('click', ()=>{
-  const gname = document.getElementById('gate_name').value.trim();
-  const gmat = document.getElementById('gate_matricule').value.trim();
-  if(!gname || !gmat){
-    alert('الرجاء إدخال الاسم ورقم التسجيل قبل المتابعة');
-    return;
-  }
-  gateScreen.style.display = 'none';
-  viewerBody.style.display = 'block';
-  buildWatermark(gname + ' — ' + gmat + ' — ' + new Date().toLocaleString('fr-FR'));
-  buildTabs();
-  showSpecialty(Object.keys(SPECIALTIES)[0]);
-});
-
-function buildWatermark(text){
-  watermarkLayer.innerHTML = '';
-  for(let r=0;r<10;r++){
-    for(let c=0;c<3;c++){
-      const s = document.createElement('span');
-      s.textContent = text;
-      s.style.top = (r*90) + 'px';
-      s.style.left = (c*320 - 60) + 'px';
-      watermarkLayer.appendChild(s);
+function updateStatus() {
+    const now = new Date();
+    if (now < OPEN_TIME) {
+        // Not open yet
+        statusAlert.className = 'status-alert waiting';
+        statusAlert.textContent = '⏳ باب الطعون لم يفتح بعد. الفتح مبرمج يوم السبت 04 جويلية 2026.';
+        renderCountdown(OPEN_TIME - now, 'ساعة (حتى الفتح)');
+        appealForm.classList.add('disabled-form');
+        formContainer.classList.add('closed-state');
+        submitBtn.disabled = true;
+        appealsStageItem.classList.add('active-stage');
+    } else if (now >= OPEN_TIME && now < CLOSE_TIME) {
+        // Open
+        statusAlert.className = 'status-alert open';
+        statusAlert.textContent = '✅ باب الطعون مفتوح الآن. يُغلق تلقائياً بعد 72 ساعة من الفتح.';
+        renderCountdown(CLOSE_TIME - now, 'ساعة (حتى الإغلاق)');
+        appealForm.classList.remove('disabled-form');
+        formContainer.classList.remove('closed-state');
+        submitBtn.disabled = false;
+        appealsStageItem.classList.add('active-stage');
+    } else {
+        // Closed automatically
+        statusAlert.className = 'status-alert closed';
+        statusAlert.textContent = '⛔ عذراً، تم إغلاق باب الطعون تلقائياً لانقضاء المدة المحددة (72 ساعة).';
+        countdownEl.style.display = 'none';
+        appealForm.classList.add('disabled-form');
+        formContainer.classList.add('closed-state');
+        submitBtn.disabled = true;
+        appealsStageItem.classList.remove('active-stage');
+        appealsStageItem.classList.add('done-stage');
     }
-  }
 }
 
-function buildTabs(){
-  specTabs.innerHTML = '';
-  Object.keys(SPECIALTIES).forEach((name, idx)=>{
-    const b = document.createElement('button');
-    b.className = 'tab-btn' + (idx===0 ? ' active' : '');
-    b.textContent = name;
-    b.type = 'button';
-    b.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      showSpecialty(name);
+updateStatus();
+setInterval(updateStatus, 1000);
+
+// ===================== SUBMISSION =====================
+const successMsg = document.getElementById('successMsg');
+const errorMsg = document.getElementById('errorMsg');
+
+async function loadAppeals() {
+    try {
+        const res = await fetch(`${SCRIPT_URL}?key=${encodeURIComponent(ADMIN_KEY)}`);
+        const data = await res.json();
+        if (data.error) return [];
+        return data;
+    } catch (e) {
+        return [];
+    }
+}
+
+async function submitAppeal(entry) {
+    // text/plain avoids a CORS preflight, which Apps Script web apps don't handle.
+    const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(entry)
     });
-    specTabs.appendChild(b);
-  });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error('submit failed');
 }
 
-function showSpecialty(name){
-  const rows = SPECIALTIES[name];
-  let html = '<table class="spec-table"><thead><tr><th>N°</th><th>رقم التسجيل</th><th>اللقب</th><th>الاسم</th></tr></thead><tbody>';
-  rows.forEach((r,i)=>{
-    html += '<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';
-  });
-  html += '</tbody></table>';
-  specTableWrap.innerHTML = html;
+submitBtn.addEventListener('click', async () => {
+    const now = new Date();
+    if (now < OPEN_TIME || now >= CLOSE_TIME) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = '⚠️ باب الطعون غير مفتوح حالياً.';
+        return;
+    }
+
+    const name = document.getElementById('fName').value.trim();
+    const regNum = document.getElementById('fRegNum').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const specialty = document.getElementById('fSpecialty').value.trim();
+    const reason = document.getElementById('fReason').value.trim();
+    const notes = document.getElementById('fNotes').value.trim();
+
+    if (!name || !regNum || !phone || !email || !specialty || !reason) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = '⚠️ الرجاء تعبئة جميع الحقول الإلزامية.';
+        successMsg.style.display = 'none';
+        return;
+    }
+    errorMsg.style.display = 'none';
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'جارِ الإرسال...';
+
+    try {
+        await submitAppeal({ name, regNum, phone, email, specialty, reason, notes });
+        successMsg.style.display = 'block';
+        appealForm.reset();
+    } catch (e) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = '⚠️ تعذر إرسال الطعن، حاول مجدداً.';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'إرسال الطعن';
+    }
+});
+
+// ===================== ADMIN LOGIN =====================
+const adminFab = document.getElementById('adminFab');
+const loginModal = document.getElementById('loginModal');
+const dashModal = document.getElementById('dashModal');
+const loginError = document.getElementById('loginError');
+
+adminFab.addEventListener('click', () => { loginModal.classList.add('active'); });
+document.getElementById('closeLoginModal').addEventListener('click', () => loginModal.classList.remove('active'));
+document.getElementById('closeDashModal').addEventListener('click', () => dashModal.classList.remove('active'));
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+    const u = document.getElementById('adminUser').value.trim();
+    const p = document.getElementById('adminPass').value;
+    if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+        loginError.style.display = 'none';
+        loginModal.classList.remove('active');
+        dashModal.classList.add('active');
+        await renderDashboard();
+    } else {
+        loginError.style.display = 'block';
+    }
+});
+
+// ===================== DASHBOARD =====================
+async function renderDashboard() {
+    const list = await loadAppeals();
+    const body = document.getElementById('appealsBody');
+    const empty = document.getElementById('emptyState');
+    const countBadge = document.getElementById('countBadge');
+    body.innerHTML = '';
+    countBadge.textContent = list.length + ' طعن';
+
+    if (list.length === 0) {
+        empty.style.display = 'block';
+    } else {
+        empty.style.display = 'none';
+        list.slice().reverse().forEach(item => {
+            const tr = document.createElement('tr');
+            const d = new Date(item.timestamp);
+            const dateStr = d.toLocaleString('ar-DZ', { dateStyle: 'medium', timeStyle: 'short' });
+            tr.innerHTML = `
+                <td>${dateStr}</td>
+                <td>${escapeHtml(item.name)}</td>
+                <td>${escapeHtml(item.regNum)}</td>
+                <td>${escapeHtml(item.phone)}</td>
+                <td>${escapeHtml(item.email)}</td>
+                <td>${escapeHtml(item.specialty)}</td>
+                <td>${escapeHtml(item.reason)}</td>
+                <td>${escapeHtml(item.notes || '-')}</td>
+            `;
+            body.appendChild(tr);
+        });
+    }
 }
 
-/* ===== حماية أساسية ضد النسخ/الطباعة/التحميل (لا تمنع التصوير الفوتوغرافي للشاشة) ===== */
-modalOverlay.addEventListener('contextmenu', e=>e.preventDefault());
-document.addEventListener('keydown', function(e){
-  if(!modalOverlay.classList.contains('active')) return;
-  const k = e.key.toLowerCase();
-  if((e.ctrlKey || e.metaKey) && (k==='p' || k==='s' || k==='c' || k==='u')){
-    e.preventDefault();
-  }
-  if(k === 'f12' || (e.ctrlKey && e.shiftKey && (k==='i' || k==='j' || k==='c'))){
-    e.preventDefault();
-  }
-});
-window.addEventListener('beforeprint', function(){
-  if(modalOverlay.classList.contains('active')){
-    viewerBody.classList.add('protect-blur');
-  }
-});
-window.addEventListener('afterprint', function(){
-  viewerBody.classList.remove('protect-blur');
-});
-/* تمويه المحتوى عند فقدان تركيز النافذة (تقليل فرص الالتقاط عبر أدوات خارجية) */
-document.addEventListener('visibilitychange', function(){
-  if(modalOverlay.classList.contains('active')){
-    if(document.hidden){ viewerBody.classList.add('protect-blur'); }
-    else { viewerBody.classList.remove('protect-blur'); }
-  }
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+document.getElementById('refreshBtn').addEventListener('click', renderDashboard);
+
+// ===================== EXCEL EXPORT (ExcelJS, styled) =====================
+document.getElementById('exportBtn').addEventListener('click', async () => {
+    const list = await loadAppeals();
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('طعون الطلبة', { views: [{ rightToLeft: true }] });
+
+    sheet.mergeCells('A1:H1');
+    sheet.getCell('A1').value = 'جامعة قاصدي مرباح ورقلة - كلية الرياضيات وعلوم المادة - قسم الكيمياء';
+    sheet.getCell('A1').font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+    sheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+    sheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00695C' } };
+    sheet.getRow(1).height = 28;
+
+    sheet.mergeCells('A2:H2');
+    sheet.getCell('A2').value = 'قائمة طعون توجيه طلبة السنة الثالثة كيمياء أساسية - الموسم الجامعي 2026-2027';
+    sheet.getCell('A2').font = { bold: true, size: 11, color: { argb: 'FF00695C' } };
+    sheet.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' };
+    sheet.getCell('A2').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2F1' } };
+
+    sheet.addRow([]);
+
+    const headers = ['تاريخ الإرسال', 'الاسم واللقب', 'رقم التسجيل', 'الهاتف', 'البريد الإلكتروني', 'الرغبة/التخصص محل الطعن', 'سبب الطعن', 'ملاحظات'];
+    const headerRow = sheet.addRow(headers);
+    headerRow.eachCell(cell => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF26A69A' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+        cell.border = { bottom: { style: 'thin' } };
+    });
+    headerRow.height = 24;
+
+    list.forEach((item, idx) => {
+        const d = new Date(item.timestamp);
+        const dateStr = d.toLocaleString('fr-FR');
+        const row = sheet.addRow([dateStr, item.name, item.regNum, item.phone, item.email, item.specialty, item.reason, item.notes || '-']);
+        row.eachCell(cell => {
+            cell.alignment = { horizontal: 'right', vertical: 'top', wrapText: true };
+        });
+        if (idx % 2 === 1) {
+            row.eachCell(cell => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+            });
+        }
+    });
+
+    sheet.columns = [
+        { width: 20 }, { width: 22 }, { width: 16 }, { width: 16 },
+        { width: 24 }, { width: 26 }, { width: 40 }, { width: 30 }
+    ];
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `طعون_توجيه_الكيمياء_${new Date().toISOString().slice(0,10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 });
 </script>
+
 </body>
 </html>
